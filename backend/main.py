@@ -29,7 +29,12 @@ except ImportError:
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data")
 FRONTEND = os.path.join(BASE, "frontend")
-GUEST_FILE = os.path.join(DATA, "guest_data.json")
+if os.environ.get("VERCEL") == "1":
+    # Vercel's filesystem is read-only except /tmp: guest sessions live
+    # there (fresh on every cold start, which is fine for guest sessions).
+    GUEST_FILE = os.path.join("/tmp", "guest_data.json")
+else:
+    GUEST_FILE = os.path.join(DATA, "guest_data.json")
 PORT = 8002
 
 engine = Engine(DATA)
